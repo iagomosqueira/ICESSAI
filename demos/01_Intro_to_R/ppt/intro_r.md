@@ -38,6 +38,10 @@ CRAN
 ===========
 \centerline{\includegraphics[height=2.8in]{pics/cran.png}}
 
+Task views
+===========
+\centerline{\includegraphics[height=2.8in]{pics/taskviews.png}}
+
 RStudio
 ===========
 \centerline{\includegraphics[height=2.8in]{pics/rstudio.png}}
