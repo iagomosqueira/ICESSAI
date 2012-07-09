@@ -5,11 +5,11 @@
 - 09.00 Welcome & presentation
 - 10.00 TEA & COFFEE
 - 10.30 Lecture 1: Objectives of stock assessment and data required
-- 11.30 R Demo 1: Introduction to R and computing for fisheries science
+- 11.30 **R Demo 1: Introduction to R and computing for fisheries science**
 - 12.30 LUNCH
 - 13.30 Lecture 2: Fitting models to data
 - 14.30 TEA & COFFEE
-- 15.00 Assignment 1: Stock-recruitment relationships
+- 15.00 **Assignment 1: Stock-recruitment relationships**
 
 
 ## Tuesday 10 July 2012 ##
@@ -57,4 +57,3 @@
 - 13.30 Q&A session
 - 14.30 TEA & COFFEE
 - 15.00 Closing discussion
-
