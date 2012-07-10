@@ -102,7 +102,7 @@ plot(year, catch, type='b', pch=19)
 resid <- log(index/(Q*biomass))
 
 #==============================================================================
-# Bootsrap - compute confidence intervals
+# Bootstrap - compute confidence intervals
 #==============================================================================
 
 # number of iterations

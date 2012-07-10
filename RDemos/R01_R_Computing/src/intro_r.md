@@ -11,6 +11,13 @@ swer to that is, ‘No’. The long answer to that is, ‘No!’.”
 
 – Frank Harrell, 1999 S-PLUS User Conference, New Orleans (October 1999)
 
+But this should be easy
+===========
+
+"Managing fisheries is hard: it’s like managing a forest, in which the trees are invisible and keep moving around"
+
+- Professor John Shepherd
+
 Data analist
 ==========
 \centerline{\includegraphics[height=2in]{pics/Data_Science_VD.png}}
