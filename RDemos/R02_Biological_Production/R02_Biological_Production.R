@@ -5,21 +5,28 @@
 # Copyright 2011-12 Iago Mosqueira & Ernesto Jardim, EC JRC
 
 
+library(lattice)
+
 #==============================================================================
 # MORTALITY 
 #==============================================================================
 
-# population and selectivity
+# initial population
 pop <- rep(NA, 15)
+
+# selectivity, full from age 3
 sel <- c(0, 0, rep(1, 13))
 
-# 1000 recruits
+# Initial recruits
 pop[1] <- 1000
 
+# Natural mortality for all ages
 M <- 0.2
+
+# Overall F
 F <- 0.3
 
-# N_a+1 = N_a * e^-(F*P_a+M)
+# N_a+1 = N_a * e ^ -(F * P_a + M)
 pop[2] <- pop[1] * exp(-(F * sel[1] + M))
 pop[3] <- pop[2] * exp(-(F * sel[2] + M))
 pop[4] <- pop[3] * exp(-(F * sel[3] + M))
@@ -40,6 +47,8 @@ pop[15]
 # What is the proportional survival (and mortality) at each age?
 for(a in 2:15)
   print(pop[a] / pop[a-1])
+
+pop[2:15] / pop[1:14]
 
 # Plot abundance at age (bar chart)
 barplot(pop, names.arg=1:15)
@@ -64,9 +73,11 @@ wei <- rep(NA, 15)
 for(a in 1:15)
   wei[a] <- Winf * (1- exp(-k*(a-t0)))^3
 
+wei <- Winf * (1- exp(-k*((1:15)-t0)))^3
+
 # Plot weight by age
 plot(1:15, wei, pch=19)
-  abline(10, 0, lty=2)
+  abline(Winf, 0, lty=2)
 
 # Biomass at age
 bio <- pop * wei
@@ -113,47 +124,13 @@ plot(1:25, ssb, pch=19, type='b', ylim=c(0, max(ssb)))
 
 # what about the effect of F ?
 
-F <- seq(0,3,0.1)
-Feff.res <- lapply(split(F,F), function(x){Feff(x)})
-Feff.res <- do.call("rbind", Feff.res)
-xyplot(rec~year, groups=F, data=Feff.res, type=c("g","l"), auto.key=list(space="right"))
-
-#==============================================================================
-# RECRUITMENT VARIABILITY
-#==============================================================================
-
-popv <- popn
-v <- 1000
-
-plot(1:25, ssb, ylim=c(0,max(ssb)*2))
-
-for (i in 1:50)
-{
-
-  for(y in 2:25)
-  {
-    # recruitment
-    popv[y,1] <- (b1 * ssb[y-1]) / (b2 + ssb[y-1]) + (runif(1) - 0.5) * v
-
-    for(a in 2:15)
-      popv[y,a] <- popv[y-1,a-1] * exp(- (F*sel[a-1] + M))
-  
-    # SSB
-    ssb[y] <- sum(wei[3:15] * popv[y, 3:15])
-  
-  lines(1:25, ssb, lty=1, col='red')
-  }
-}
-
-
-
-#####################################################################
-#### FUNCTION FOR F effect
-
+# Feff
 Feff <- function(F){
+
 	# population matrix
 	popn <- matrix(NA, nrow=25, ncol=15, dimnames=list(year=1:25, age=1:15), byrow=TRUE)
-	# first year
+	
+  # first year
 	popn[1,] <- pop
 
 	# B&H parameters
@@ -177,3 +154,36 @@ Feff <- function(F){
 }
 
 
+Fs <- seq(0,3,0.1)
+Feff.res <- lapply(split(Fs,Fs), function(x){Feff(x)})
+Feff.res <- do.call("rbind", Feff.res)
+
+xyplot(rec~year, groups=F, data=Feff.res, type=c("g","l"), auto.key=list(space="right"))
+
+#==============================================================================
+# RECRUITMENT VARIABILITY
+#==============================================================================
+
+popv <- popn
+v <- 1000
+
+plot(1:25, ssb, ylim=c(0,max(ssb)*2))
+
+for (i in 1:50)
+{
+
+  for(y in 2:25)
+  {
+    # recruitment
+    popv[y,1] <- (b1 * ssb[y-1]) / (b2 + ssb[y-1]) + (runif(1) - 0.5) * v
+
+    for(a in 2:15)
+      popv[y,a] <- 
+        popv[y-1,a-1] * exp(- (F*sel[a-1] + M))
+  
+    # SSB
+    ssb[y] <- sum(wei[3:15] * popv[y, 3:15])
+  
+  lines(1:25, ssb, lty=1, col='red')
+  }
+}

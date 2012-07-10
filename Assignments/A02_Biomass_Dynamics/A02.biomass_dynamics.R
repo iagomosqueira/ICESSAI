@@ -1,10 +1,7 @@
-###############################################################################
 # SP_Steve - Biomass dynamics (aka Surplus Production)
-# Copyright 2003-2009 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, Cefas; Ernesto Jardim, IPIMAR
-# Last update: 17/06/2011
 # This script shows the steps followed to fit an biomass dynamic model to albacore
-###############################################################################
+
+# Copyright 2011-12 Iago Mosqueira & Ernesto Jardim, EC JRC
 
 #==============================================================================
 # Load Albacore data from Polacheck, 1993.
@@ -33,9 +30,7 @@ sp.sc <- function(params, index=index){
   for(y in seq(2, length(catch))){
     biomass[y] <- max(biomass[y-1] + biomass[y-1] * r - (r/K) * biomass[y-1]^2 - catch[y-1], 1e-4)
   }
-	
   return(sum(log(index/(Q*biomass))^2))
-
 }
 
 #------------------------------------------------------------------------------
@@ -50,9 +45,7 @@ getBiomass <- function(r, K, b0, catch){
   for(y in seq(2, length(catch))){
     biomass[y] <- max(biomass[y-1] + biomass[y-1] * r - (r/K) * biomass[y-1]^2 - catch[y-1], 1e-4)
   }
-
   return(biomass)
-
 }
 
 
@@ -66,7 +59,12 @@ getBiomass <- function(r, K, b0, catch){
 #   bounds: 1e-8 > r < 1, max(catch) > K < Inf, max(catch) > Q < Inf, 1e-8 < q > 1e5
 #------------------------------------------------------------------------------
 
-res <- optim(c(0.5, max(catch)*10, max(catch)*10, 0.25), sp.sc, method="L-BFGS-B", lower=c(1e-8, max(catch), max(catch), 1e-8), upper=c(1, Inf, Inf, 1e5), control=list(trace=1, parscale=c(0.5, max(catch)*10, max(catch)*10, 0.25)), index=index)
+res <- optim(c(0.5, max(catch)*10, max(catch)*10, 0.25), sp.sc,
+  method="L-BFGS-B",
+  lower=c(1e-8, max(catch), max(catch), 1e-8),
+  upper=c(1, Inf, Inf, 1e5),
+  control=list(trace=1, parscale=c(0.5, max(catch)*10, max(catch)*10, 0.25)),
+  index=index)
 
 # results
 r <- res$par[1]
@@ -106,7 +104,7 @@ resid <- log(index/(Q*biomass))
 #==============================================================================
 
 # number of iterations
-iter <- 1000
+iter <- 100
 
 # matrix for bootstraped residuals
 boot <- matrix(NA, nrow=iter, ncol=length(resid))
@@ -131,7 +129,8 @@ for(i in 1:iter)
   cat("------ iter: ", i, "------\n")
   params[i,] <- optim(c(0.5, max(catch)*10, max(catch)*10, 0.25), sp.sc,
   method="L-BFGS-B", lower=c(1e-8, max(catch), max(catch), 1e-8),
-  upper=c(1, Inf, Inf, 1e5), control=list(trace=1, parscale=c(0.5, max(catch)*10, max(catch)*10, 0.25)), index=boot[,i])$par
+  upper=c(1, Inf, Inf, 1e5), control=list(trace=1, parscale=c(0.5, max(catch)*10, 
+  max(catch)*10, 0.25)), index=boot[,i])$par
 
   # and calculate biomasses
   bioms[i,] <- getBiomass(params[i,1],params[i,2],params[i,3],catch)
@@ -147,14 +146,11 @@ lines(year, log(Q*biomass), col=2)
 # B/Bmsy
 BoBmsy <- apply(bioms,2,function(x)x/(params[,"K"]/2))
 boxplot(BoBmsy)
-abline(1,0, lty=2, col="0gray80")
+abline(1,0, lty=2, col="red")
 
 # projection
 newcatch <- c(catch, rep(13.2,10))
 newbioms <- apply(params, 1, function(x) getBiomass(x[1],x[2],x[3],newcatch))
 newbioms <- t(newbioms)
 sum(newbioms[,33]/(params[,"K"]/2) > 1)/1000
-boxplot(t(newbioms))
-
-
-
+boxplot(t(newbioms), ylim=c(0, 500))
