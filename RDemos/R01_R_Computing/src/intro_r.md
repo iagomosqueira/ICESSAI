@@ -18,7 +18,7 @@ But this should be easy
 
 - Professor John Shepherd
 
-Data analist
+Data analyst
 ==========
 \centerline{\includegraphics[height=2in]{pics/Data_Science_VD.png}}
 
