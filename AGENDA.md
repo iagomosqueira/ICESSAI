@@ -44,13 +44,13 @@
 - 12.30 LUNCH
 - 13.30 **R Exercise: MSE**
 - 14.30 TEA & COFFEE
-- 15.00 Lecture 8: Statistical catch-at-age
 
 
 ## Friday 13 July 2012 ##
 
-- 09.00 Lecture 9: Biological Reference Points
-- 10.00 TEA & COFFEE
+- 09.00 Lecture 8: Statistical catch-at-age
+- 10.30 TEA & COFFEE
+- 11.00 Lecture 9: Biological Reference Points
 - 10.30 Lecture 10: Projections
 - 11.30 **Assignment 5: Maximum Sustainable Yield**
 - 12.30 LUNCH
