@@ -1,0 +1,654 @@
+\documentclass[a4paper]{article}
+\usepackage{geometry}
+\usepackage{color}
+\usepackage{framed}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\geometry{verbose,a4paper,tmargin=2cm,bmargin=1.5cm,lmargin=2cm,rmargin=3cm}
+\definecolor{shadecolor}{rgb}{0.9,0.9,0.9}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\onehalfspacing
+\hypersetup{colorlinks, urlcolor=darkblue}
+
+\begin{document}
+\SweaveOpts{engine=R}
+\title{Exploratory data analysis with FLR}
+\author{Ernesto Jardim <ernesto@ipimar.pt>\\
+Manuela Azevedo <mazevedo@ipimar.pt\\
+IPIMAR, Av.Brasilia, 1449-006 Lisboa}
+\date{}
+\maketitle
+
+Exploratory data analysis in \href{http://flr-project.org}{FLR} is done using the package \href{http://flr-project.org}{FLEDA}, mainly focus on data available for stock assessment. \href{http://flr-project.org}{FLEDA} was developed under the project IPIMAR/NeoMAv. It includes a combination of simple calculations and graphical representations aiming at data screening (checking for missing data, unusual values, patterns, etc), inspection of data consistency (within and between data series) and extracting signals from the basic data. Diagnostics include those recommended during the 2004 Methods Working Group meeting (ICES, 2004).
+
+This paper uses the example data set included in \href{http://flr-project.org}{FLR} (North Sea plaice stock, \texttt{ple4}) and is structured by (i) Catch and Effort, (ii) Abundance indices, (iii) Biomass and (iv) Total mortality.
+
+First one needs to load the required packages and data.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+require(FLEDA)
+data(ple4)
+data(ple4sex)
+data(ple4.index)
+data(ple4.indices)
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+<<echo=FALSE>>=
+# setting reference lines to white
+trellis.par.set(reference.line=list(col="white"), strip.background=list(col="white"))
+@
+
+\section{Catch and Effort}
+
+These analysis can be applied to landings and/or discards.
+
+\subsection{Catch trends and summary statistics}
+
+First let's look at some statistics with \texttt{summary}:
+
+By sex:
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+apply(catch(ple4sex),3,summary)
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Or total
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+summary(catch(ple4sex))
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Note that this is different from the sex combined information, which can be processed after summing data.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+summary(apply(catch(ple4sex), 2, sum))
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+But \href{http://flr-project.org}{FLR} is a great piece of software :-) and we think about lot's of ways to make your and our life easier. There are a set of methods \texttt{*Sums}, \texttt{*Means}, \texttt{*Totals} and \texttt{*Vars} to compute the \texttt{apply} above. Note the similarities
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+summary(unitSums(catch(ple4sex)))
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Now you're thinking, "where da heck is this unit thing coming from ?". \texttt{FLQuant} objects do not have a dimension for sex, actually we've tried to reduce the dimensions as much as possible and could get away with 6 ... one of them is \texttt{unit}, that can be used for several subjects like sex related information.
+
+The catch trends can be plotted from the \texttt{catch} slot using \texttt{xyplot} \footnote{which allows conditioning on a specific variable, e.g. sex (defined in dim "unit")}.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# fine tune xyplot
+ttl <- list(label="Catch trends by sex for plaice in IV", cex=1)
+yttl <- list(label=units(ple4sex@catch), cex=0.7)
+xttl <- list(cex=0.7)
+stripttl <- list(cex=0.7)
+ax <- list(cex=0.7)
+# plot
+print(xyplot(data~year|unit, data=ple4sex@catch, type=c("g", "l"), main=ttl, ylab=yttl, xlab=xttl, par.strip.text=stripttl, scales=ax))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Note that currently the units for this data are not defined for catch and thus Y label is \texttt{NA}.
+
+Catch trends can also be analyses superimposed using the argument \texttt{groups}.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+print(xyplot(data~year, data=ple4sex@catch, groups=unit, type=c("g", "l"), main="catch trends by sex for plaice in IV", ylab=units(ple4sex@catch)))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+The total (sex combined) can be plotted and a loess smoother added to better visualize the time trend.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# define the panel function to include a loess fit
+pfun <- function(x,y, ...){
+	panel.xyplot(x,y, type="l", lty=1, col=4, ...)
+	panel.loess(x,y, span=0.5, lty=2, col=1)}
+# fine tune 
+ttl <- list(label="Catch trends for plaice in IV", cex=1)
+yttl <- list(label=units(ple4@catch), cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+# legend
+akey <- list(text=list(c("observed","loess(span=0.5)"), cex=0.7), border=T, lines=list(lty=c(1,2), col=c(4,1)))
+# plot
+print(xyplot(data~year, data=ple4@catch, panel=pfun, main=ttl, ylab=yttl, xlab=xttl, scales=ax, key=akey))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+The \href{http://cran.at.r-project.org/web/packages/lattice/index.html}{lattice} developer also thinks about he's users and implemented a easy way to plot the smoother without using a panel function. Note the vector for the \texttt{type} argument.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# define the panel function to include a loess fit
+print(xyplot(data~year, data=catch(ple4), main=ttl, ylab=yttl, xlab=xttl, scales=ax, auto.key=TRUE, type=c("g","l","smooth")))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+\subsection{Commercial yield versus effort}
+
+Not available due to lack of data. Will be added later.
+
+\subsection{Catch-at-age proportions}
+
+A first look at the catch at age matrix can be done by analyzing catch proportions-at-age. Other exploratory plots are the catch proportion-at-age relative to the average proportion-at-age, and the standardized catch proportion-at-age. These plots help identifying the fully exploited ages, may indicate strong year classes, year and/or age effects and changes in the exploitation pattern. Depending on the stock catch-at-age matrix one or the other can be clearer.
+
+These analysis are carried out with the \href{http://flr-project.org}{FLEDA} methods \texttt{pay}, \texttt{rpay}, \texttt{nay} and \texttt{spay} and plotted with \texttt{FLCore} method \texttt{bubbles}.
+
+Considering $C_{ay}$, the catch in numbers-at-age $a=1,...,A$ per year y=1,...,Y, obtained \textit{e.g.} from the \texttt{catch.n} slot of a \texttt{FLStock} object, the computation of \texttt{pay}, proportion-at-age, is \[ P_{ay}=\frac{C_{ay}}{\sum_a{C_{ay}}} \]
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# compute catch proportions at age
+ple4sex.pay <- pay(ple4sex@catch.n)
+# fine tune 
+ttl <- list(label="Catch proportion at age for Plaice in IV", cex=1)
+yttl <- list(label="age", cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+# plot
+print(bubbles(age~year|unit, ple4sex.pay,  main=ttl, ylab=yttl, xlab=xttl, scales=ax, bub.scale=4))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+While the relative proportion-at-age, \texttt{rpay}, is computed by \[ P_{ay}^r=\frac{P_{ay}}{\bar{P}_{a}} \] where \[ \bar{P}_{a}=\frac{\sum_y{P_{ay}}}{Y}\]
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# compute relative catch proportion at age
+ple4sex.rpay <- rpay(ple4sex@catch.n)
+# fine tune 
+ttl <- list(label="Relative catch proportion at age for Plaice in IV", cex=1)
+yttl <- list(label="age", cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+# plot
+print(bubbles(age~year|unit, ple4sex.rpay,  main=ttl, ylab=yttl, xlab=xttl, scales=ax, bub.scale=5))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+the relative to the maximum proportion-at-age, \texttt{nay}, is computed replacing the mean, $\bar{P}_{a}$, by the maximum.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# compute relative to maximum catch proportion at age
+ple4sex.nay <- nay(ple4sex@catch.n)
+# fine tune 
+ttl <- list(label="Relative to maximum catch proportion at age for Plaice in IV", cex=1)
+yttl <- list(label="age", cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+# plot
+print(bubbles(age~year|unit, ple4sex.nay,  main=ttl, ylab=yttl, xlab=xttl, scales=ax, bub.scale=5))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Last but not least, the standardized proportion-at-age, \texttt{spay}, is computed by \[ P_{ay}^s=\frac{P_{ay}-\bar{P}_a}{s_a} \] where \[ s_a = \sqrt{\frac{\sum{(P_{ay}-\bar{P}_a)^2}}{Y-1}} \].
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# compute standardized catch proportion at age
+ple4sex.spay <- spay(ple4sex@catch.n)
+# fine tune 
+ttl <- list(label="Standardized catch proportion at age for Plaice in IV", cex=1)
+yttl <- list(label="age", cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+# plot
+print(bubbles(age~year|unit, ple4sex.spay,  main=ttl, ylab=yttl, xlab=xttl, scales=ax, bub.scale=5))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Note that positive values are represented by white bubbles and negative values by black bubbles.
+
+\section{Abundance indices}
+
+A first look at our data to check for 0 and missing values, can be done with \texttt{mv0}. Regarding a single index,
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+mv0(index(ple4.index))
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+or to a list of indices (\texttt{FLIndices} object),
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+data(ple4.indices)
+lapply(ple4.indices, function(x) mv0(index(x)))
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Ok, no major problems ! perfect indices :-)
+
+\subsection{Correlation matrix by age}
+
+Let's see how the indices correlate between ages with the \texttt{cor} method for \texttt{FLQuant} objects. In this case we'll use the spearman rank correlation which is a non parametric method, less sensible to extreme values like it's common on fisheries data. The argument \texttt{use} is set to be "complete.obs" by default, which is different from the general \texttt{cor} function (see help for \texttt{cor}). There is a side effect on using "complete.obs", the correlation is computed for matching cohorts while for \texttt{use}="all.obs" the correlation is computed by years. This is done by applying \texttt{FLCohort} to the \texttt{FLQuant} object before applying the correlation method. 
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+arr <- cor(index(ple4.index))
+round(arr,2)
+@ 
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Another possibility is to compute the correlation between ages of different indices. This is done by using \texttt{cor} with two \texttt{FLQuant} objects as arguments, after setting both with the same dimensions.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+idx1 <- trim(index(ple4.indices[[1]]), age=1:8, year=1996:2008)
+idx2 <- trim(index(ple4.indices[[2]]), age=1:8, year=1996:2008)
+arr <- cor(idx1, idx2)
+round(arr,2)
+@ 
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Note that only 3 ages match between both indices so only 3 correlation coefficients can be calculated. Also there is no correlation between different ages of different indices, that would be a cross-correlation and could be misleading so it will be developed by a different method.
+
+\subsection{Pairwise scatterplot}
+
+To help visualizing how the indices correlate between ages (within index consistency) the lattice method \texttt{splom} was implemented for \texttt{FLQuant} and \texttt{FLCohort} objects. 
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+
+ttl <- list("Pairwise plot of age by year for plaice in IV (Unk.index)", cex=1)
+xttl <- list("age", cex=0.8)
+yttl <- list("age", cex=0.8)
+# panel function
+pfun <- function(x,y,...){
+          panel.splom(x,y, ...)
+          panel.lmline(x,y, lty=1)
+        }
+# plot
+print(splom(~data, data=index(ple4.index), panel=pfun, pscales=0, main=ttl, xlab=xttl, ylab=yttl, pch=19, cex=0.3))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+It does not look so good as the correlation matrix. The difference is that this plot is done by year not by cohort, and the correlation we are observing is a regression coefficient not the spearman correlation.
+
+However, notice the parallel with the \texttt{cor} method. The \texttt{splom} method applyed to a \texttt{FLQuant} (the index object above) is like \texttt{use}="all.obs" on the \texttt{cor} method, because the data is plotted by age with each point indicating an year observation.
+
+If the object is coerced into a \texttt{FLCohort} object, the plot will be by age with each point indicating a cohort observation and the results are similar to using \texttt{cor} with the argument \texttt{use}="complete.obs" (see the plot below).
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ttl <- list("Pairwise plot of age by cohort for plaice in IV (Unk.index)", cex=1)
+xttl <- list("age", cex=0.8)
+yttl <- list("age", cex=0.8)
+# panel function
+pfun <- function(x,y,...){
+          panel.splom(x,y, ...)
+          panel.lmline(x,y, lty=1)
+        }
+# plot
+flc <- FLCohort(index(ple4.index))
+print(splom(~data, data=flc, panel=pfun, pscales=0, main=ttl, xlab=xttl, ylab=yttl, pch=19, cex=0.3))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+\subsection{Time series of CPUE}
+
+Help checking the consistency between tunning series. This can be done using the R function \texttt{scale} together with the \href{http://flr-project.org}{FLEDA} method \texttt{mcf} (make compatible flquants). Note that \texttt{scale} centers and scales the variable to a normal distribution with mean 0 and variance 1, while \texttt{mcf} takes several \texttt{FLQuant} objects and returns a \texttt{FLQuants} object where all its components have the same dimensions, allowing the plotting of all the objects together.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+
+# let's extract the index slot from each FLIndex object in the FLIndices object.
+lst <- lapply(ple4.indices, index)
+# now a nice FLQuants
+ple4.inds <- mcf(lst)
+# scale
+ple4.indsN01 <- lapply(ple4.inds, function(x){
+                  arr <- apply(x@.Data, c(1,3,4,5,6), scale)
+                  arr <- aperm(arr, c(2,1,3,4,5,6))
+                  # small trick to fix an apply "feature"
+                  dimnames(arr) <- dimnames(x)
+                  x <- FLQuant(arr)
+                })
+ple4.indsN01 <- FLQuants(ple4.indsN01)
+# stupid hack to correct names (fixed in version 2)
+names(ple4.indsN01) <- names(lst)
+# fine tune
+ttl <- list("Surveys CPUE for Plaice in IV", cex=1)
+xttl <- list(cex=0.8)
+yttl <- list("Standardized CPUE", cex=0.8)
+stripttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+akey <- list(points=F, lines=T, columns=3, cex=0.8)
+# plot
+print(xyplot(data~year|factor(age), groups=qname, data=ple4.indsN01, type=c("g","l"), main=ttl, xlab=xttl, ylab=yttl, auto.key=akey, striptext=stripttl, scales=ax, as.table=TRUE, layout=c(5,2,1)))
+
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+\section{Biomass}
+
+Data for weight-at-age, maturity ogive and indices of abundance are used to produce indicators of mature and immature biomass based on the catch-at-age matrix. Note that these indicators are dependent on the fleet's effort,  catchability and selectivity, as well as on abundance, and have to considered with caution. 
+
+\subsection{Weight-at-age}
+
+Weights-at-age can be plotted with the \texttt{xyplot} method making use of the argument \texttt{groups}, which allows the identification of time trends and awkward values.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE, echo=FALSE>>=
+ttl <- list(label="Catch weight at age for Place in IV", cex=1)
+yttl <- list(label=units(catch.wt(ple4sex)), cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+print(xyplot(data~year|unit, data=catch.wt(ple4sex), groups=age, type="l", lty=1:15, col=1, main=ttl, ylab=yttl, xlab=xttl, scales=ax))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+This figure highlights:
+
+\begin{itemize}
+	\item the differences between males and females mean weight at age,
+	\item awkward values like zero weight at age 0 until 1990, and 0 weight for females at age 15 in 1993,
+	\item the downward trend in mean weight at age in recent years for elder ages.
+\end{itemize}
+
+\subsection{Maturity}
+
+The maturity ogive can be plotted by the following code (note the use of the \texttt{auto.key} argument to add a legend):
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+
+ttl <- list(label="Maturity ogive by sex for plaice in IV", cex=1)
+yttl <- list(label="%", cex=0.8)
+xttl <- list(cex=0.8)
+stripttl <- list(cex=0.7)
+ax <- list(x=list(tick.number=7, cex=0.7), y=list(cex=0.7))
+akey <- simpleKey(text=c("female", "male"), points=F, lines=T)
+print(xyplot(data~age|as.factor(year), data=ple4sex@mat, type=c("g","l"), groups=unit, key=akey, main=ttl, ylab=yttl, xlab=xttl, scales=ax, par.strip.text=stripttl))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+This is not an interesting case due to the constant knife edge maturity ogive. Note also that information is not available for males.
+
+\subsection{Trends in biomass}
+
+Using the \texttt{bmass} method it's possible to compute mature and immature biomass. Using \texttt{xyplot} method for \texttt{FLQuants} objects it is possible to plot the normalized biomass time series.
+
+The code below uses catch data for the stock to extract signals regarding biomass trends but the same analysis can be performed for other information at age like survey indices or CPUE.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+# compute mature and immature biomass
+ple4.bmass <- bmass(ple4)
+# tune plot
+ttl <- list(label="Trends in biomass for mature and immature plaice in IV", cex=1)
+yttl <- list(label="relative biomass", cex=0.8)
+xttl <- list(cex=0.8)
+ax <- list(cex=0.8)
+# plot
+print(xyplot(data~year, groups=qname, data=ple4.bmass, type=c("g","l"), main=ttl, auto.key=list(lines=TRUE, points=FALSE), ylab=yttl, xlab=xttl, scales=ax))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+\section{Total mortality}
+
+Catch curves are simple methods to extract total mortality (Z) signals. The slope of a catch curve is an estimator of total mortality for a year class if the catchability is constant over ages. This is generally not the case, but if the change in catchability is constant then changes in slope over time is an estimator of changes in total mortality over time. Averaging over an age range can reveal if the overall impression of mortality is similar to other estimates of mortality. Averaging over a year range and comparing with other year ranges have the potential of revealing possible changes in exploitation pattern (or potential changes in natural mortality for the younger age groups), but additional information on fishing mortality is needed (WGMG).
+
+\subsection{Catch curves}
+
+This analysis allows the identification of the age range to compute total mortality coefficient (Z). It can be applied to the stock catch at age matrix but also to each fleet or survey catch at age data. This way a comparison of the total mortality coefficients can be carried out.
+
+The log catch/CPUE ratio is computed with the method \texttt{logcc} (note that this outputs a \texttt{logcc} class object, that extends the \texttt{FLCohort} class). The plot is done by the function \texttt{ccplot}.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ple4sex.cc <- logcc(ple4sex@catch.n)
+ttl <- list(label="Log catch curves by sex for plaice in IV", cex=1)
+yttl <- list(label="log ratio", cex=0.8)
+xttl <- list(cex=0.8)
+stripttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+print(ccplot(data~age|unit, data=ple4sex.cc, type="l", main=ttl, ylab=yttl, xlab=xttl, scales=ax, par.strip.text=stripttl, col=1))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Another type of plot, often presented in assessment working groups report, can be done with \texttt{logcc} by year, as shown in the following code.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ple4sex.cc <- logcc(ple4sex@catch.n)
+# fine tune
+ttl <- list(label="Log catch curves by sex for plaice in IV", cex=1)
+yttl <- list(label="log ratio", cex=0.8)
+xttl <- list(cex=0.8)
+stripttl <- list(cex=0.8)
+ax <- list(cex=0.7)
+print(ccplot(data~year|unit, data=ple4sex.cc, type="l", main=ttl, ylab=yttl, xlab=xttl, scales=ax, par.strip.text=stripttl, col=1))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+\subsection{Total mortality trends}
+
+Total mortality can be computed based on the log ratio between ages and years and averaged over a defined age range. Using the \texttt{z} method one is able to compute this coefficient that can be compared among fleets or catch-at-age matrices to get an idea of the overall mortality. The age range is passed to the method by the \texttt{agerng} argument.
+
+Total mortality can be analyzed by age per year, age per cohort or year per age. The \texttt{summary} method shows the mean and variance of Z per year and cohort. It was also implemented a \texttt{t.test} method to compare both Z estimates, by cohort and by year. The rationale is that if these series are not statistically different then it can be assumed that Z is constant for the age range defined.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+<<>>=
+# compute Z
+ple4z <- z(ple4@catch.n, agerng=3:6)
+summary(ple4z)
+t.test(ple4z)
+@
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Now the plots. First the average total mortality by year.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ple4z <- z(ple4@catch.n, agerng=3:6)
+ttl <- list("Total mortality (Z) for Plaice in IV", cex=1)
+xttl <- list(cex=0.8)
+yttl <- list("Mean Z", cex=0.8)
+print(xyplot(data~year, data=ple4z@zy, type=c("g","l"), main=ttl, ylab=yttl, xlab=xttl))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+Now per age group, averaging over years.
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ple4z <- z(ple4@catch.n, agerng=3:6)
+ttl <- list("Total mortality (Z) for Plaice in IV", cex=1)
+xttl <- list(cex=0.8)
+yttl <- list("Mean Z", cex=0.8)
+ax <- list(x=list(at=c(3:6)))
+print(xyplot(data~age, data=ple4z@za, type=c("g","l"), main=ttl, ylab=yttl, xlab=xttl, scales=ax))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+
+And finaly by cohort, averaging over ages. 
+
+\begin{center}
+\begin{minipage}[H]{0.95\textwidth}%
+\begin{shaded}%
+\begin{center}
+<<fig=TRUE>>=
+ple4z <- z(ple4@catch.n, agerng=3:6)
+ttl <- list("Total mortality (Z) for Plaice in IV", cex=1)
+xttl <- list(cex=0.8)
+yttl <- list("Mean Z", cex=0.8)
+print(xyplot(data~cohort, data=ple4z@zc, type=c("g","l"), main=ttl, ylab=yttl, xlab=xttl))
+@
+\end{center}
+\end{shaded}%
+\end{minipage}
+\end{center}
+ 
+\section{Final thoughts}
+
+Exploratory data analysis is highly objective driven in the sense that one run such analysis looking for hints on the data about the way a specific problem can be tackled. There are a few generic ideas but most of the times it's like detective work.
+
+\href{http://flr-project.org}{FLR} provides the adequate platform for performing exploratory data analysis on fisheries and ecological data but how much one can achieve with these exercises will always depend on personal's skills and good.
+ 
+\end{document}

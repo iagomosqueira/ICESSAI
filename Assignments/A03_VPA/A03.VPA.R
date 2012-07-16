@@ -1,22 +1,10 @@
-###############################################################################
 # VPA - A plain Virtual Population Analysis using Pope's (1972) approximation
-# VPA/VPA.R
-#
-# Copyright 2003-2009 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, Cefas; Ernesto Jardim, IPIMAR
-# Last Change: 22/06/2011 
-# $Id:  $
-#
-# Reference:
-# Notes: It may help repeating the sample session in R manual 
-# (http://cran.r-project.org/doc/manuals/R-intro.html#A-sample-session)
-#
-# TODO Fri 17 Jul 2009 01:06:24 PM CEST IM:
-###############################################################################
+# A03_VPA.R
 
-#==============================================================================
+# Copyright 2011-12 Iago Mosqueira & Ernesto Jardim, EC JRC
+
+
 # Read data, set assumptions and initialize objects
-#==============================================================================
 
 # Load CAA and WAA by year
 caa <- read.table('csherring_caa.dat', sep='\t', header=TRUE)
@@ -117,10 +105,10 @@ vpa <- function(caam, sel, lastF, M, agesF=seq(dim(caam)[2]))
   faam <- caam
   faam[] <- NA
 
-  # Assign initial values to FAA_year=2008
+  # Assign initial values to FAA_lastyear
   faam[lastY,] <- sel * lastF
 
-  # then to NAA_year=2008
+  # then to NAA_lastyear
   naam[lastY,] <- (caam[lastY,] * (faam[lastY,] + M)) / (faam[lastY,] *
     (1 - exp(-faam[lastY,] - M)))
 
@@ -143,7 +131,7 @@ vpa <- function(caam, sel, lastF, M, agesF=seq(dim(caam)[2]))
   return(list(naa=naam, faa=faam))
 } # }}}
 
-res <- vpa(caam, sel, 0.5, 0.2, 3:5)
+res <- vpa(caam, sel=sel, lastF=0.5, M=0.2, agesF=3:5)
 res2 <- vpa(caam, sel, 0.25, 0.2, 3:5)
 res3 <- vpa(caam, sel, 0.75, 0.2, 3:5)
 
@@ -162,3 +150,7 @@ plot(1958:2008, rowSums(res$naa[,3:6]*waam[,3:6]), type='b', ylab="SSB", xlab=""
   lines(1958:2008, rowSums(res2$naa[,3:6]*waam[,3:6]), type='b', pch=3)
   lines(1958:2008, rowSums(res3$naa[,3:6]*waam[,3:6]), type='b', pch=4)
 
+
+# Selectivity
+sel <- c(0.01, 1, 1, 1, 1, 1)
+resS <- vpa(caam, sel=sel, lastF=0.5, M=0.2, agesF=2:5)
