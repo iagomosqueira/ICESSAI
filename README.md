@@ -1,16 +1,35 @@
 # ICESSAI #
 
-ICES Training Stock Assessment Introduction
+ICES Training - Stock Assessment Introduction
 
 ## PROGRAMME ##
 
-- Model fitting
-- Stock–recruit
-- Biological production
-- Biomass dynamics models
-- Demographics
-- Virtual population analysis
-- Statistical catch-at-age
-- Projection & Reference Points
-- Simulation
-- Management Strategy Evaluation
+# MON
+
+## Introduction
+
+## Model-fitting: SR
+
+# TUE
+
+## Biological Production
+
+## Biomass dynamics
+
+# WED
+
+## Demographics
+
+## Virtual Population Analysis
+
+# THU
+
+## Statistical catch-at-age
+
+## Reference points
+
+# FRI
+
+## Simulation
+
+## Management Strategy Evaluation

@@ -1,6 +1,6 @@
 # AGENDA #
 
-## Monday 9 July 2012 ##
+## Monday 27 May 2013 ##
 
 - 09.00 Welcome & presentation
 - 10.00 TEA & COFFEE
@@ -12,7 +12,7 @@
 - 15.00 **Assignment 1: Stock-recruitment relationships**
 
 
-## Tuesday 10 July 2012 ##
+## Tuesday 28 May 2013 ##
 
 - 09.00 Lecture 3a: Components of production
 - 10.00 TEA & COFFEE
@@ -24,7 +24,7 @@
 - 15.00 **Assignment 2: Biomass dynamics models**
 
 
-## Wednesday 11 July 2012 ##
+## Wednesday 29 May 2013 ##
 
 - 09.00 Lecture 5: Age-structured models
 - 10.00 TEA & COFFEE
@@ -36,7 +36,7 @@
 - 15.00 **R Demo 3: Introduction to FLR**
 
 
-## Thursday 12 July 2012 ##
+## Thursday 30 May 2013 ##
 
 - 09.00 Lecture 7: Simulation
 - 10.00 TEA & COFFEE
@@ -46,7 +46,7 @@
 - 14.30 TEA & COFFEE
 
 
-## Friday 13 July 2012 ##
+## Friday 31 May 2013 ##
 
 - 09.00 Lecture 8: Statistical catch-at-age
 - 10.30 TEA & COFFEE

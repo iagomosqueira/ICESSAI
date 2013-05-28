@@ -37,6 +37,10 @@ Why R?
 ==========
 \centerline{\includegraphics[height=2.8in]{pics/popular.png}}
 
+OSS = Peer review
+==========
+\centerline{\includegraphics[height=2.8in]{pics/paper.png}}
+
 GPL v3.0
 ===========
 \centerline{\includegraphics[height=2.8in]{pics/GPL.png}}
