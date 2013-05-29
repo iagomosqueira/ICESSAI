@@ -2,34 +2,32 @@
 
 ICES Training - Stock Assessment Introduction
 
-## PROGRAMME ##
+## MON
 
-# MON
+### Introduction
 
-## Introduction
+### Model-fitting: SR
 
-## Model-fitting: SR
+## TUE
 
-# TUE
+### Biological Production
 
-## Biological Production
+### Biomass dynamics
 
-## Biomass dynamics
+## WED
 
-# WED
+### Demographics
 
-## Demographics
+### Virtual Population Analysis
 
-## Virtual Population Analysis
+## THU
 
-# THU
+### Statistical catch-at-age
 
-## Statistical catch-at-age
+### Reference points
 
-## Reference points
+## FRI
 
-# FRI
+### Simulation
 
-## Simulation
-
-## Management Strategy Evaluation
+### Management Strategy Evaluation

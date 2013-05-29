@@ -70,7 +70,7 @@ plot(years, mojo, type='b', pch=19, cex=0.6, ylab="Age-1 abundance", xlab="", ma
 plot(years, rowMeans(faam[,c("3", "4", "5", "6")]), type='b', pch=19, cex=0.6, ylab="F (age 3-6)", xlab="")
 
 # plot SSB
-plot(years, rowSums(naam * waam), type='b', pch=19, cex=0.6, ylab="SSB", xlab="")
+plot(years, rowSums((naam * waam) %*% mat), type='b', pch=19, cex=0.6, ylab="SSB", xlab="")
 
 # What is the abundance at age, 1958-2008?
 naam
@@ -146,9 +146,9 @@ plot(1958:2008, apply(res$faa[,3:5], 1, mean), type='b', ylab="F(3-5)", xlab="")
   lines(1958:2008, apply(res3$faa[,3:5], 1, mean), type='b', pch=4)
 
 # SSBs
-plot(1958:2008, rowSums(res$naa[,3:6]*waam[,3:6]), type='b', ylab="SSB", xlab="")
-  lines(1958:2008, rowSums(res2$naa[,3:6]*waam[,3:6]), type='b', pch=3)
-  lines(1958:2008, rowSums(res3$naa[,3:6]*waam[,3:6]), type='b', pch=4)
+plot(1958:2008, rowSums((res$naa * waam) %*% mat), type='b', ylab="SSB", xlab="")
+  lines(1958:2008, rowSums((res2$naa * waam) %*% mat), type='b', pch=3)
+  lines(1958:2008, rowSums((res3$naa * waam) %*% mat), type='b', pch=4)
 
 
 # Selectivity
