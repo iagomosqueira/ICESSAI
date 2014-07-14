@@ -1,8 +1,12 @@
-THEME=Iago
-COLORTHEME=dolphin
+#
+ROOT:=`git rev-parse --show-toplevel`/Templates/tex
+DOC=INTRO_R
+OUT=../R01_Intro_to_R
 
-all:
-	pandoc --listings intro_r.md -t beamer -V theme:${THEME} -V colortheme:${COLORTHEME} -o ../R01_Intro_to_R.pdf
+all: $(OUT).pdf
+
+$(OUT).pdf: $(DOC).md
+	pandoc -t beamer -S $(DOC).md -o $(OUT).pdf -V theme=default -V colortheme=default  -V logodir=$(ROOT) -H $(ROOT)/header.tex
 
 clean:
-	rm ../R01_Intro_to_R.pdf
+	rm -f $(DOC).pdf

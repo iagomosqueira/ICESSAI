@@ -1,0 +1,112 @@
+% header.tex - DESC
+% Iago Mosqueira - JRC. 2012
+%
+
+% packages
+\usepackage[absolute,overlay]{textpos}
+
+\setlength{\TPHorizModule}{\paperwidth}
+\setlength{\TPVertModule}{\paperheight}
+
+%% gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%% bullet points
+\setbeamertemplate{itemize items}[circle] % if you want a ball
+\setbeamertemplate{itemize subitem}[circle] % if you want a circle
+\setbeamertemplate{itemize subsubitem}[circle] % if you want a triangle
+
+%% colors {{{
+\definecolor{ecblue}{RGB}{1,70,147}
+\definecolor{jrcblue}{RGB}{55,172,222}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=ecblue} 
+\setbeamercolor{shadedhead}{bg=jrcblue}
+\setbeamercolor{shadedcover}{bg=ecblue,fg=yellow}
+% }}}
+
+%% images {{{
+%\def\input@path{{}}
+
+% footer
+\pgfdeclareimage[height=5.5mm]{footer}{graphics/footer}
+
+% header
+\pgfdeclareimage[width=0.1575\paperwidth]{header}{graphics/header}
+
+% headerT
+\pgfdeclareimage[width=0.1575\paperwidth]{headerT}{graphics/headerT}
+
+% title page image
+\pgfdeclareimage[width=0.6\textwidth]{titlegraphic}{graphics/front}
+% }}}
+
+%% title page {{{
+\setbeamertemplate{title page}{
+
+% title block
+\begin{textblock}{0.7}[0,0](0.15,0.2)
+\centering
+{\fontsize{14}{20}\selectfont
+\bfseries
+\color{ecblue}\inserttitle\par}
+\end{textblock}
+
+% author block
+\begin{textblock}{0.5}[0,0](0.55,0.55)
+{\fontsize{12}{16}\selectfont
+\color{black}
+Iago MOSQUEIRA\\
+Maritime Affairs Unit - IPSC\\
+European Commission\\
+Joint Research Center\\
+}\par
+\vfill
+\end{textblock}
+
+% picture block
+\begin{textblock}{0.5}[0,0](0,0.47)
+ \pgfuseimage{titlegraphic}
+\end{textblock}
+
+} % }}}
+
+%% headline {{{
+\setbeamertemplate{headline}{
+\leavevmode\hbox{%
+%% uniform box
+\begin{beamercolorbox}[wd=\textwidth,ht=0.1447\paperheight,dp=0ex]{shadedhead}%
+	%% EC logo
+	\centering
+	%% 0.02895
+  \vspace{-0.044\paperheight}
+	\pgfuseimage{header}
+\end{beamercolorbox}%
+}} % }}}
+
+%% frame title {{{
+\setbeamertemplate{frametitle}
+{
+\color{jrcblue}\vspace{2ex}\fontsize{12}{16}\selectfont
+\textbf{\insertframetitle}
+\par
+} % }}}
+
+%% footline {{{
+%% left: date as in title
+\newcommand{\footlinetext}{\insertdate}
+\setbeamertemplate{footline}{
+\begin{minipage}{58mm}
+\hspace{7.5mm} \footlinetext
+\end{minipage}
+\hspace{0.1mm}
+%% center: jrc logo
+\begin{minipage}{8.5mm}
+ \pgfuseimage{footer}
+\end{minipage}
+\hspace{0.1mm}
+%% right: page number
+\begin{minipage}{50mm}
+ \flushright \insertframenumber
+\end{minipage}
+} % }}}

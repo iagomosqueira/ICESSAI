@@ -1,13 +1,12 @@
+% Introduction to R and computing for Quantitative Fisheries Science
 % Iago Mosqueira
-% Introduction to R (and computing)
 % \today
 
 
 Why programming?
 ==========
 
-“Can one be a good data analyst without being a half-good programmer? The short an-
-swer to that is, ‘No’. The long answer to that is, ‘No!’.”
+“Can one be a good data analyst without being a half-good programmer? The short answer to that is, ‘No’. The long answer to that is, ‘No!’.”
 
 – Frank Harrell, 1999 S-PLUS User Conference, New Orleans (October 1999)
 
@@ -20,42 +19,49 @@ But this should be easy
 
 Data analyst
 ==========
-\centerline{\includegraphics[height=2in]{pics/Data_Science_VD.png}}
+\centerline{\includegraphics[height=2in]{graphics/Data_Science_VD.png}}
 
 What is R
 ==========
 
-\centerline{\includegraphics[height=1in]{pics/Rlogo.png}}
+\centerline{\includegraphics[height=1in]{graphics/Rlogo.png}}
 
 * Data analysis and statistics environment
 * Interpreted computer language
 * Open-source software project
 * Active community of developers and practicioners
-* Current version: 2.15.1, 2012-06-22, Roasted Marshmallows
+* Current version:  3.1.1 (2014-07-10) -- "Sock it to Me"
 
 Why R?
 ==========
-\centerline{\includegraphics[height=2.8in]{pics/popular.png}}
+## R is
+- awesome
+- free (both speech and beer)
+- a community
+- the *lingua franca*
+- a language and an environment
+- integrates with other tools
+- a way to reproducible research
 
 OSS = Peer review
 ==========
-\centerline{\includegraphics[height=2.8in]{pics/paper.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/paper.png}}
 
 GPL v3.0
 ===========
-\centerline{\includegraphics[height=2.8in]{pics/GPL.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/GPL.png}}
 
 CRAN
 ===========
-\centerline{\includegraphics[height=2.8in]{pics/cran.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/cran.png}}
 
 Task views
 ===========
-\centerline{\includegraphics[height=2.8in]{pics/taskviews.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/taskviews.png}}
 
 RStudio
 ===========
-\centerline{\includegraphics[height=2.8in]{pics/rstudio.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/rstudio.png}}
 
 
 Basic features
@@ -82,18 +88,21 @@ What else can it do?
 
 Eye candy
 ==========
-\centerline{\includegraphics[height=1.5in]{pics/plot1.png}}
-\centerline{\includegraphics[height=1.5in]{pics/plot3.png}}
+\centering
+\includegraphics[height=1.5in]{graphics/plot1.png}
+\includegraphics[height=1.5in]{graphics/plot3.png}
 
 Eye candy
 ==========
-\centerline{\includegraphics[height=1.5in]{pics/plot4.png}}
-\centerline{\includegraphics[height=1.5in]{pics/plot5.png}}
+\centering
+\includegraphics[height=1.5in]{graphics/plot4.png}
+\includegraphics[height=1.5in]{graphics/plot5.png}
 
 Eye candy
 ==========
-\centerline{\includegraphics[height=1.5in]{pics/plot6.png}}
-\centerline{\includegraphics[height=1.5in]{pics/plot7.png}}
+\centering
+\includegraphics[height=1.5in]{graphics/plot6.png}
+\includegraphics[height=1.5in]{graphics/plot7.png}
 
 What doesn't it do
 ===========
@@ -101,12 +110,12 @@ What doesn't it do
 * No DB, but connections (SQL, NoSQL, Spreadsheets)
 * No GUI, but IDE & GUI toolsets - CLI
 * Slow, but C/C++, HPC
-* No commerciasl support, but community
+* No commercial support, but community
 * Think for you
 
 Help!
 ==========
-\centerline{\includegraphics[height=1in]{pics/help.png}}
+\centerline{\includegraphics[height=1in]{graphics/help.png}}
 
 * Help for each function and data type
 * ?mean
@@ -126,9 +135,6 @@ FLR
 * Risk analysis
 * Capacity development & education
 * Promote collaboration and openness in quantitative fisheries science
-    * Open source
-    * Community involvement
-    * R as lingua franca
 * Support the development of new models and methods
     * Extensible toolset
     * Links to other tools (ADMB, BUGS, ...)
@@ -137,25 +143,22 @@ FLR
 flr-project.org
 ==========
 
-\centerline{\includegraphics[height=2.8in]{pics/flrproject.png}}
+\centerline{\includegraphics[height=2.4in]{graphics/flrproject.png}}
 
 Tools of the trade
 ==========
 
 * Version Control Systems
-    * CVS
-    * SVN
-    * git
 * Editors & IDEs
 * Literate Programming
-    * Sweave
-    * knitr
 * Validation, Verification and Testing (VV&T)
+
+* **Reproducible Research**
 
 Sexy data analysis
 ==========
 
-\centerline{\includegraphics[width=0.60\textwidth]{pics/marilyn_scatter.png}}
+\centerline{\includegraphics[width=0.50\textwidth]{graphics/marilyn_scatter.png}}
 
 Setting up R & RStudio
 ==========

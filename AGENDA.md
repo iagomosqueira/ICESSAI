@@ -11,7 +11,6 @@
 - 14.30 TEA & COFFEE
 - 15.00 **Assignment 1: Stock-recruitment relationships**
 
-
 ## Tuesday 28 May 2013 ##
 
 - 09.00 Lecture 3a: Components of production
@@ -22,7 +21,6 @@
 - 13.30 Lecture 4: Biomass dynamics models
 - 14.30 TEA & COFFEE
 - 15.00 **Assignment 2: Biomass dynamics models**
-
 
 ## Wednesday 29 May 2013 ##
 
@@ -35,7 +33,6 @@
 - 14.30 TEA & COFFEE
 - 15.00 **R Demo 3: Introduction to FLR**
 
-
 ## Thursday 30 May 2013 ##
 
 - 09.00 Lecture 7: Simulation
@@ -44,7 +41,6 @@
 - 12.30 LUNCH
 - 13.30 **R Exercise: MSE**
 - 14.30 TEA & COFFEE
-
 
 ## Friday 31 May 2013 ##
 
